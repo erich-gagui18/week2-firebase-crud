@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Records — Firebase Auth &amp; Firestore CRUD</title>
+  <meta name="description" content="Student records manager with Firebase Authentication and Cloud Firestore CRUD." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23000000'/%3E%3Cpath d='M6 9l6-3 6 3-6 3-6-3z' fill='%23fff'/%3E%3Cpath d='M8 11.5V16c0 1 1.8 2 4 2s4-1 4-2v-4.5' stroke='%23fff' stroke-width='1.4' fill='none'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 9l8-4 8 4-8 4-8-4z" fill="#fff"/>
+          <path d="M7 11.2V17c0 1.4 2.2 2.6 5 2.6s5-1.2 5-2.6v-5.8" stroke="#fff" stroke-width="1.6" fill="none"/>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <h1>Student Records</h1>
+        <span class="brand-eyebrow">Firebase · Auth + Firestore</span>
+      </div>
+    </div>
+    <div id="userBar" class="user-bar hidden">
+      <span id="userAvatar" class="user-avatar" aria-hidden="true"></span>
+      <span id="userEmail"></span>
+      <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ===================== AUTH SECTION ===================== -->
+    <section id="authSection" class="card">
+      <p class="section-eyebrow">Sign in to continue</p>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="loginTab">Login</button>
+        <button class="tab-btn" data-tab="registerTab">Register</button>
+      </div>
+
+      <p id="authError" class="error-msg hidden"></p>
+      <p id="authSuccess" class="success-msg hidden"></p>
+
+      <!-- Login -->
+      <form id="loginTab" class="tab-panel active">
+        <label for="loginEmail">Email address</label>
+        <input type="email" id="loginEmail" required placeholder="you@example.com" />
+
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" required placeholder="Password" />
+
+        <button type="submit" class="btn btn-primary">Login</button>
+      </form>
+
+      <!-- Register -->
+      <form id="registerTab" class="tab-panel">
+        <label for="registerEmail">Email address</label>
+        <input type="email" id="registerEmail" required placeholder="you@example.com" />
+
+        <label for="registerPassword">Password</label>
+        <input type="password" id="registerPassword" required placeholder="At least 6 characters" minlength="6" />
+
+        <label for="registerConfirmPassword">Confirm password</label>
+        <input type="password" id="registerConfirmPassword" required placeholder="Re-enter password" minlength="6" />
+
+        <button type="submit" class="btn btn-primary">Register</button>
+      </form>
+
+    </section>
+
+    <!-- ===================== PROTECTED SECTION ===================== -->
+    <section id="protectedSection" class="hidden">
+
+      <div class="card">
+        <p class="section-eyebrow">Student information</p>
+        <h2 id="formTitle">Add Student Record</h2>
+        <p id="crudError" class="error-msg hidden"></p>
+        <p id="crudSuccess" class="success-msg hidden"></p>
+
+        <form id="studentForm">
+          <input type="hidden" id="recordId" />
+
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" required placeholder="Juan Dela Cruz" />
+
+          <label for="studentID">Student ID</label>
+          <input type="text" id="studentID" required placeholder="e.g. 2023-00123" />
+
+          <label for="programme">Programme</label>
+          <input type="text" id="programme" required placeholder="e.g. BSIT" />
+
+          <label for="year">Year</label>
+          <select id="year" required>
+            <option value="" disabled selected>Select year</option>
+            <option value="1st Year">1st Year</option>
+            <option value="2nd Year">2nd Year</option>
+            <option value="3rd Year">3rd Year</option>
+            <option value="4th Year">4th Year</option>
+          </select>
+
+          <label for="email">Email Address</label>
+          <input type="email" id="email" required placeholder="student@example.com" />
+
+          <label for="favouriteTechnology">Favourite Technology</label>
+          <input type="text" id="favouriteTechnology" required placeholder="e.g. Firebase" />
+
+          <div class="btn-row">
+            <button type="submit" id="addBtn" class="btn btn-primary">Add Record</button>
+            <button type="button" id="updateBtn" class="btn btn-warning hidden">Update Record</button>
+            <button type="button" id="clearBtn" class="btn btn-secondary">Clear Form</button>
+          </div>
+          <p class="form-hint">Records are private — only you can see, edit, or delete records you create.</p>
+        </form>
+      </div>
+
+      <div class="card">
+        <p class="section-eyebrow">Your data</p>
+        <h2>My Records</h2>
+        <div class="table-wrap">
+          <table id="recordsTable">
+            <thead>
+              <tr>
+                <th>Full Name</th>
+                <th>Student ID</th>
+                <th>Programme</th>
+                <th>Year</th>
+                <th>Email</th>
+                <th>Favourite Tech</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="recordsBody">
+              <!-- populated by app.js -->
+            </tbody>
+          </table>
+          <div id="emptyState" class="empty-state hidden">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="6" width="18" height="14" rx="2" stroke="#8c8c8c" stroke-width="1.5"/>
+              <path d="M3 10h18" stroke="#8c8c8c" stroke-width="1.5"/>
+              <path d="M8 3v4M16 3v4" stroke="#8c8c8c" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            No records yet. Add your first student record above.
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Delete confirmation modal -->
+  <div id="confirmModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-icon" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M10.29 3.86l-8.4 14.55A1 1 0 002.75 20h18.5a1 1 0 00.87-1.59l-8.4-14.55a1 1 0 00-1.72 0z" stroke="currentColor" stroke-width="1.6"/>
+        </svg>
+      </div>
+      <p>Are you sure you want to delete this record? This can't be undone.</p>
+      <div class="btn-row">
+        <button id="confirmDeleteBtn" class="btn btn-danger">Delete</button>
+        <button id="cancelDeleteBtn" class="btn btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

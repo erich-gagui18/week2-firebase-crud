@@ -197,10 +197,12 @@ function resetForm() {
   addBtn.classList.remove("hidden");
   updateBtn.classList.add("hidden");
   formTitle.textContent = "Add Student Record";
-  clearMessages(crudError, crudSuccess);
 }
 
-clearBtn.addEventListener("click", resetForm);
+clearBtn.addEventListener("click", () => {
+  resetForm();
+  clearMessages(crudError, crudSuccess);
+});
 
 function readFormValues() {
   return {

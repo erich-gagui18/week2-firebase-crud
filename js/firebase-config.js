@@ -1,23 +1,20 @@
 // js/firebase-config.js
-// Replace the values below with your own project's config from:
-// Firebase Console > Project Settings > General > Your apps > Web app > SDK setup and configuration
-//
-// If you're reusing the same Firebase project as your Week 2 CRUD app,
-// you can copy those exact same values here — Auth and Firestore are
-// shared across your whole project, a new "users" collection just sits
-// alongside your existing "students" collection.
+// Project: week2-firebase-crud-gagui (shared with the Week 2 CRUD app —
+// Auth and Firestore are shared across the whole project, so this "users"
+// collection just sits alongside the existing "students" collection).
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyDNGlmbmwq_nkyUCKmjz3Q3uONFCt7-H6g",
+  authDomain: "week2-firebase-crud-gagui.firebaseapp.com",
+  projectId: "week2-firebase-crud-gagui",
+  storageBucket: "week2-firebase-crud-gagui.firebasestorage.app",
+  messagingSenderId: "172845744860",
+  appId: "1:172845744860:web:afbc4eef26796e57dd6a19",
+  measurementId: "G-1EBL0Z9MQG",
 };
 
 const app = initializeApp(firebaseConfig);

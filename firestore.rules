@@ -3,14 +3,31 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    match /students/{recordId} {
-      // Anyone signed in can create a record, but only as themselves.
-      allow create: if request.auth != null
-                    && request.resource.data.ownerId == request.auth.uid;
+    // ============ Week 4: user profiles (Student Access Portal) ============
+    // Each profile document is keyed by the user's own UID. A user may only
+    // read, create, or update their OWN profile — never anyone else's.
+    // This is enforced server-side: the client-side auth check in the app
+    // is a UX convenience only, not a security boundary on its own.
+    match /users/{userId} {
+      allow read:   if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId
+                    // role is always "Student" on write — prevents a user
+                    // from self-assigning a different role at signup.
+                    && request.resource.data.role == "Student";
+      allow update: if request.auth != null && request.auth.uid == userId
+                    // once set, a user cannot change their own role or UID.
+                    && request.resource.data.role == resource.data.role;
+      allow delete: if false; // profiles are not deletable from the client
+    }
 
-      // Read, update, delete only allowed on records the user owns.
+    // ============ Week 2: student records (kept if reusing that project) ============
+    // Remove this block if this is a brand-new Firebase project with no
+    // "students" collection from the Week 2 CRUD activity.
+    match /students/{recordId} {
       allow read, update, delete: if request.auth != null
-                    && resource.data.ownerId == request.auth.uid;
+                                   && request.auth.uid == resource.data.ownerId;
+      allow create: if request.auth != null
+                    && request.auth.uid == request.resource.data.ownerId;
     }
   }
 }

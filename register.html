@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login — Student Access Portal</title>
-  <meta name="description" content="Student Access Portal — Firebase Authentication with Email/Password and Google Sign-In." />
+  <title>Register — Student Access Portal</title>
+  <meta name="description" content="Create a Student Access Portal account — Firebase Authentication + Firestore profile." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23000000'/%3E%3Cpath d='M6 9l6-3 6 3-6 3-6-3z' fill='%23fff'/%3E%3Cpath d='M8 11.5V16c0 1 1.8 2 4 2s4-1 4-2v-4.5' stroke='%23fff' stroke-width='1.4' fill='none'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -30,20 +30,26 @@
 
   <main class="auth-container">
     <div class="card">
-      <p class="section-eyebrow">Screen 2 — Login</p>
-      <h2>Welcome back</h2>
+      <p class="section-eyebrow">Screen 1 — Registration</p>
+      <h2>Create your account</h2>
 
       <div id="banner" class="access-banner hidden"></div>
       <p id="authError" class="error-msg hidden"></p>
 
-      <form id="loginForm">
-        <label for="loginEmail">Email address</label>
-        <input type="email" id="loginEmail" required placeholder="you@example.com" autocomplete="email" />
+      <form id="registerForm">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" required placeholder="Juan Dela Cruz" autocomplete="name" />
 
-        <label for="loginPassword">Password</label>
-        <input type="password" id="loginPassword" required placeholder="Password" autocomplete="current-password" />
+        <label for="registerEmail">Email address</label>
+        <input type="email" id="registerEmail" required placeholder="you@example.com" autocomplete="email" />
 
-        <button type="submit" id="loginBtn" class="btn btn-primary">Login</button>
+        <label for="registerPassword">Password</label>
+        <input type="password" id="registerPassword" required placeholder="At least 6 characters" minlength="6" autocomplete="new-password" />
+
+        <label for="programme">Programme</label>
+        <input type="text" id="programme" required placeholder="e.g. BSIT" autocomplete="off" />
+
+        <button type="submit" id="registerBtn" class="btn btn-primary">Register</button>
       </form>
 
       <div class="divider">or</div>
@@ -52,11 +58,12 @@
         <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.5 5.1 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.4-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.5 5.1 29.5 3 24 3 16 3 9 7.6 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.4 0 10.3-2.1 14-5.5l-6.5-5.4c-2 1.5-4.6 2.4-7.5 2.4-5.3 0-9.7-3.4-11.3-8l-6.6 5.1C9 40.5 16 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.2-4 5.6l6.5 5.4C41.8 35.9 45 30.6 45 24c0-1.4-.1-2.7-.4-3.5z"/></svg>
         Continue with Google
       </button>
+      <p class="form-hint">Signing up with Google? You'll set your Programme on the dashboard after your first sign-in.</p>
 
-      <p class="auth-switch">Don't have an account? <a href="register.html">Register here</a></p>
+      <p class="auth-switch">Already have an account? <a href="index.html">Login here</a></p>
     </div>
   </main>
 
-  <script type="module" src="js/login.js"></script>
+  <script type="module" src="js/register.js"></script>
 </body>
 </html>

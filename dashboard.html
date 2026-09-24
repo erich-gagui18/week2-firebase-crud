@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Student Access Portal</title>
+  <meta name="description" content="Protected student dashboard — Firebase Authentication + Firestore profile." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23000000'/%3E%3Cpath d='M6 9l6-3 6 3-6 3-6-3z' fill='%23fff'/%3E%3Cpath d='M8 11.5V16c0 1 1.8 2 4 2s4-1 4-2v-4.5' stroke='%23fff' stroke-width='1.4' fill='none'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="app-header">
+    <a href="dashboard.html" class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 9l8-4 8 4-8 4-8-4z" fill="#fff"/>
+          <path d="M7 11.2V17c0 1.4 2.2 2.6 5 2.6s5-1.2 5-2.6v-5.8" stroke="#fff" stroke-width="1.6" fill="none"/>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <h1>Student Access Portal</h1>
+        <span class="brand-eyebrow">Firebase Authentication Module</span>
+      </div>
+    </a>
+    <div id="userBar" class="user-bar hidden">
+      <span id="headerAvatar" class="user-avatar" aria-hidden="true"></span>
+      <span id="headerUserEmail"></span>
+      <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+    </div>
+  </header>
+
+  <!-- Shown while auth state / profile is still loading -->
+  <div id="gate" class="auth-gate">
+    <span class="spinner" aria-hidden="true"></span>
+    <span>Verifying session…</span>
+  </div>
+
+  <main class="container hidden" id="dashboardContent">
+    <p class="section-eyebrow">Screen 3 — Protected Dashboard</p>
+
+    <div class="card welcome-card">
+      <div class="greet-eyebrow">Session verified</div>
+      <h2 id="welcomeMsg">Welcome!</h2>
+
+      <div class="profile-grid">
+        <div class="profile-field">
+          <div class="pf-label">Full Name</div>
+          <div class="pf-value" id="pfFullName">—</div>
+        </div>
+        <div class="profile-field">
+          <div class="pf-label">Email</div>
+          <div class="pf-value mono" id="pfEmail">—</div>
+        </div>
+        <div class="profile-field">
+          <div class="pf-label">Programme</div>
+          <div class="pf-value" id="pfProgramme">—</div>
+        </div>
+        <div class="profile-field">
+          <div class="pf-label">Role</div>
+          <div class="pf-value" id="pfRole">—</div>
+        </div>
+        <div class="profile-field">
+          <div class="pf-label">Authentication Method</div>
+          <div class="pf-value" id="pfAuthMethod">—</div>
+        </div>
+        <div class="profile-field">
+          <div class="pf-label">Status</div>
+          <div class="pf-value">
+            <span class="status-chip"><span class="dot"></span>Authenticated</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shown only if programme is missing (e.g. first-time Google sign-in) -->
+      <div id="completeProfileNote" class="complete-profile-note hidden">
+        <span>Your profile is missing a Programme — set one to complete your record:</span>
+        <div class="btn-row">
+          <input type="text" id="programmeInput" placeholder="e.g. BSIT" />
+          <button type="button" id="saveProgrammeBtn" class="btn btn-primary" style="margin-top:0;">Save</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

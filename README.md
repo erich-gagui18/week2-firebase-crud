@@ -1,112 +1,112 @@
-# Week 2 Activity — Firebase Authentication and Database CRUD
+# Week 4 Activity — Student Access Portal (Firebase Authentication Module)
 
-A Firebase web application where registered users can log in and manage their
-own **student records** (Full Name, Student ID, Programme, Year, Email,
-Favourite Technology) stored in **Cloud Firestore**, with **Firebase
-Authentication** protecting the CRUD interface.
+A Firebase web app demonstrating a full authentication module: user
+registration, Email/Password login, Google Sign-In, a Firestore user
+profile, a protected dashboard, logout, and basic security rules.
 
 ## Project Structure
 
 ```
-week2-firebase-crud/
+week4-student-portal/
 ├── .firebaserc            # Firebase CLI project alias (set your project ID)
 ├── .gitignore
 ├── .vscode/
-│   └── launch.json         # Launch Chrome against a local dev server
+│   └── launch.json
 ├── css/
-│   └── style.css           # Styling (responsive)
+│   └── style.css           # "Monochrome Ledger" theme (matches Week 2)
 ├── js/
-│   ├── app.js               # Auth logic + Firestore CRUD logic
-│   └── firebase-config.js   # Firebase project configuration (fill in your own keys)
-├── index.html              # Auth screens + protected student form + records table
-├── firebase.json           # Firebase Hosting configuration
-├── firestore.rules         # Recommended security rules (per-user data isolation)
+│   ├── firebase-config.js   # Firebase project configuration (fill in your own keys)
+│   ├── auth-guard.js        # Shared route protection (requireAuth / redirectIfAuthed)
+│   ├── login.js             # Screen 2 logic
+│   ├── register.js          # Screen 1 logic
+│   └── dashboard.js         # Screen 3 logic
+├── index.html               # Screen 2 — Login (entry point)
+├── register.html            # Screen 1 — Registration
+├── dashboard.html            # Screen 3 — Protected Dashboard
+├── firebase.json             # Hosting + Firestore rules config
+├── firestore.rules           # Security rules (per-user profile isolation)
 ├── README.md
 └── CHANGELOG.md
 ```
 
-## Features
+## How auth protection works
 
-- **Authentication**: Email/Password registration, login, logout, friendly
-  error messages, current user's email displayed, CRUD interface hidden from
-  unauthenticated users.
-- **Student form**: labeled fields with validation (required fields, email
-  format, minimum password length).
-- **CRUD against Firestore `students` collection**:
-  - **Create** — adds a record with `ownerId` set to the logged-in user's UID
-    and `createdAt` as a server timestamp; clears the form and shows a
-    success message.
-  - **Read** — live (`onSnapshot`) query filtered by `where("ownerId", "==",
-    uid)`, so each user only ever sees their own records.
-  - **Update** — clicking **Edit** loads the record into the form and swaps
-    the button to **Update Record**.
-  - **Delete** — clicking **Delete** opens a confirmation modal before
-    removing the record; the table refreshes automatically (it's a live
-    listener, so no manual refresh is needed).
+- **`js/auth-guard.js`** exports two functions used across all three pages:
+  - `requireAuth(callback)` — used on `dashboard.html`. Listens for auth
+    state; if no user is signed in, redirects to `index.html` immediately.
+    If a user is signed in, fetches their Firestore profile and calls
+    `callback(user, profile)`.
+  - `redirectIfAuthed()` — used on `index.html` and `register.html`. If a
+    user is already signed in, skips straight to `dashboard.html` instead
+    of showing the login/register form again.
+- This is a **client-side UX convenience only**. The actual security
+  boundary is `firestore.rules` — a user cannot read or write another
+  user's profile document no matter what the client does, because the
+  rules enforce `request.auth.uid == userId` server-side.
 
 ## Setup
 
-1. **Create a Firebase project**
-   - Go to the [Firebase Console](https://console.firebase.google.com/).
-   - Create a new project and add a **Web app** to it.
-   - Copy the config object it gives you.
+1. **Firebase project** — reuse your Week 2 project (simplest — Auth and
+   Firestore are shared across your whole project, so a new `users`
+   collection just sits alongside `students`), or create a new one at the
+   [Firebase Console](https://console.firebase.google.com/).
 
-2. **Fill in `js/firebase-config.js`**
-   - Paste your `apiKey`, `authDomain`, `projectId`, `storageBucket`,
-     `messagingSenderId`, and `appId` into the placeholders.
+2. **Fill in `js/firebase-config.js`** with your project's config object
+   (Project Settings → General → Your apps → Web app).
 
-3. **Enable Authentication**
-   - In the console: **Authentication → Get Started → Sign-in method →
-     Email/Password → Enable**.
+3. **Enable Email/Password sign-in** — Authentication → Sign-in method →
+   Email/Password → Enable.
 
-4. **Create Firestore**
-   - In the console: **Firestore Database → Create database** and choose a
-     location.
-   - The `students` collection is created automatically the first time a
-     record is added — you don't need to create it manually.
+4. **Enable Google sign-in** — Authentication → Sign-in method → Google →
+   Enable → set a support email.
 
-5. **(Recommended) Apply the security rules**
-   - In the console: **Firestore Database → Rules**, paste the contents of
-     `firestore.rules`, and publish. This enforces server-side that a user
-     can only read, update, or delete their own records — the client-side
-     query alone is not a security boundary.
+5. **Create Firestore** (if not already created from Week 2) — Firestore
+   Database → Create database. The `users` collection is created
+   automatically on first registration.
 
-6. **Run locally**
-   - Because the app uses ES modules (`type="module"`), open it through a
-     local server rather than double-clicking the HTML file, e.g.:
-     ```
-     npx serve .
-     ```
-     or the VS Code "Live Server" extension.
+6. **Apply the security rules** — Firestore Database → Rules, paste the
+   contents of `firestore.rules`, and publish. (If reusing the Week 2
+   project, merge this with your existing `students` rules block — both
+   are already included in this file as separate `match` blocks.)
 
-7. **Deploy to Firebase Hosting**
+7. **Run locally** — this app uses ES modules (`type="module"`), so it
+   must be served over `http://`, not opened as a `file://` path:
    ```
-   npm install -g firebase-tools   # if not already installed
+   firebase emulators:start
+   ```
+   or `npx serve .`, or the VS Code "Live Server" extension.
+
+8. **Deploy**
+   ```
    firebase login
-   firebase init                   # choose Hosting, select your project, public dir = "."
-   firebase deploy --only hosting
+   firebase init            # if not already initialized for this folder
+   firebase deploy
    ```
-   `firebase init` will overwrite `.firebaserc` with your actual project ID
-   (it currently contains the placeholder `YOUR_FIREBASE_PROJECT_ID`).
-   Firebase will give you a Hosting URL after deployment.
 
 ## Testing Checklist
 
-- [ ] Register a new user
-- [ ] Log in with the registered account
-- [ ] Add at least three student records
-- [ ] Confirm records display correctly
-- [ ] Update at least one record
-- [ ] Delete at least one record (confirm the modal appears)
-- [ ] Log out and confirm the protected form is hidden
-- [ ] Log back in and confirm the remaining records still appear
-- [ ] Log in as a second user and confirm you do **not** see the first
-      user's records
+Matches the activity's Section 5.6:
+
+- [ ] Register a new user → account created, redirected to dashboard
+- [ ] Correct email/password → login successful ("Access Granted")
+- [ ] Incorrect password → "Access Denied" shown, not signed in
+- [ ] Google Sign-In → login successful, profile auto-created on first use
+- [ ] Visit `dashboard.html` directly while logged out → redirected to login
+- [ ] View own profile → full name, email, programme, role, auth method all correct
+- [ ] Logout → session ends, redirected/blocked from dashboard
+- [ ] Visit `dashboard.html` again after logout → access denied (redirected)
+- [ ] Log in as a second account → cannot see or edit the first account's profile
+      (test directly against Firestore rules, e.g. via the Rules Playground
+      in the console, not just through the UI)
 
 ## Notes
 
-- All Firestore access happens client-side through the modular Firebase v10
-  SDK (loaded via CDN in `app.js` and `firebase-config.js` — no build step or
-  `npm install` is required for the app itself).
-- Passwords are handled entirely by Firebase Authentication; this app never
-  stores or sees raw passwords beyond the sign-in call.
+- Firebase Authentication verifies **identity** (who you are); Firestore
+  security rules handle **authorization** (what you're allowed to touch)
+  — the two are separate layers, both required for a genuinely secure app.
+- A Google-authenticated user has no "Programme" from Google's own data,
+  so the dashboard shows an inline prompt to set it on first login. Once
+  saved, it behaves identically to an Email/Password profile.
+- All Firebase access happens client-side through the modular v10 SDK,
+  loaded via the `gstatic.com` CDN — no build step or `npm install`
+  required for the app itself.
